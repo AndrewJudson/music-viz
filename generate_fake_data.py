@@ -28,11 +28,21 @@ def generate_nodes(n):
    genre_list = [chr(i) for i in xrange(65,123)]
    label_list = [chr(i) for i in xrange(65,123)]
    for i in xrange(0, n):
+      rand_city_coords = random.choice(city_list + [None])
+      if rand_city_coords == None:
+         lat = None
+         lon = None
+         rand_city = None
+      else:
+         rand_city = rand_city_coords.keys()[0]
+         lat, lon = rand_city_coords[rand_city]
       current_dict = {"index": i,
                    "name": random.sample(usable_names,1)[0],
-                   "origin_city": random.choice(city_list + ["NULL"]),
-                   "origin_date": random.choice(range(1975,2014) + ["NULL"]),
-                   "image_link": random.choice(image_list + ["NULL"]),
+                   "origin_city": rand_city,
+                   "lat":lat,
+                   "lon":lon,
+                   "origin_date": random.choice(range(1975,2014) + [None]),
+                   "image_link": random.choice(image_list + [None]),
                    "wiki_link": random.choice(wiki_list),
                    "genre_list": random.sample(genre_list, random.choice(range(1,6))),
                    "label_list": random.sample(label_list, random.choice(range(1,4))),
@@ -71,7 +81,7 @@ def generate_links(nodes):
 def main():
    """Generates a json graph of fake data so that I can play around with it in d3.js before my scrapers are set up"""
    if len(sys.argv) != 3:
-      raise Exception("Incorrect number of arguments, please input number of nodes, number of links, and filename")
+      raise Exception("Incorrect number of arguments, please input number of nodes and filename")
    num_nodes = int(sys.argv[1])
    filename = sys.argv[2]
    nodes = generate_nodes(num_nodes)
