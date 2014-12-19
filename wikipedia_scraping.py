@@ -56,6 +56,33 @@ def get_soup_origin_date(soup):
       return date[0]
    return None
 
+def get_city_lon_lat(city_link):
+   soup = get_soup(city_link)
+   element = find_table_string(soup, u'Country')
+   in_US = True
+   print element
+   if element != None:
+      try:
+         if element.find('a').text != u'United States':
+            in_US = False
+      except:
+         pass 
+   
+   if in_US:
+      latitude = soup.findAll('span', {"class" : "latitude"})[0].text
+      longitude = soup.findAll('span', {"class" : "longitude"})[0].text
+      latitude, longitude = conversion(latitude), conversion(longitude)
+      return (latitude, longitude)
+
+#http://stackoverflow.com/questions/10852955/python-batch-convert-gps-positions-to-lat-lon-decimals
+def conversion(old):
+    direction = {'N':-1, 'S':1, 'E': -1, 'W':1}
+    new = old.replace(u'°',' ').replace(u'\u2032',' ').replace(u'\u2033',' ')
+    new = new.split()
+    new_dir = new.pop()
+    new.extend([0,0,0])
+    return (int(new[0])+int(new[1])/60.0+int(new[2])/3600.0) * direction[new_dir]
+
 def get_all_artist_data():
    artists = get_alternative_rock_band_list()
    for artist in artists:
@@ -63,4 +90,5 @@ def get_all_artist_data():
       print artist
       origin_date = get_soup_origin_date(soup)
       origin_city = get_soup_city_link(soup)
+      lat_lon = get_city_lon_lat(origin_city)
       print origin_date, origin_city

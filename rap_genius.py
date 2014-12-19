@@ -73,8 +73,9 @@ def gather_all_songs(artist_list, fail_dict):
          try:
             songs = get_popular_song_lyrics(artist)
             print 'got songs'
-            pickle.dump(open(artist_filename, 'wb'), songs)
+            pickle.dump(songs, open(artist_filename, 'wb'))
          except: fail_dict[artist] = None
+      if os.path.isfile(artist_filename): print 'file already exists'
 
 def get_all_NLP_data(artist_dict):
    artists = artist_dict.keys()
