@@ -123,7 +123,7 @@ d3.json("us_states.json", function(error, us) {
       .attr("id", "state-borders")
       .attr("d", path);
 
-  var data = d3.json("30_nodes.json", function(error, data) {
+  var data = d3.json("testing_4.json", function(error, data) {
        //var colors = randomColors(data.nodes.length);
        var num_lines = data.links.length;     
        var line_color = d3.scale.linear().domain([0,num_lines]).range(["#99CCFF", "#000066"]);
@@ -132,10 +132,11 @@ d3.json("us_states.json", function(error, us) {
            .enter()
            .append("circle")
            .attr("cx", function(d) {
-                   return projection([d.lon, d.lat])[0];
+                   console.log(projection([d.lon, d.lat]));
+                   return projection([-1 * d.lon, -1 * d.lat])[0];
            })
            .attr("cy", function(d) {
-                   return projection([d.lon, d.lat])[1];
+                   return projection([-1 * d.lon, -1 * d.lat])[1];
            })
            .attr("r", 3)
            .style("fill", function(d) {
@@ -162,14 +163,14 @@ d3.json("us_states.json", function(error, us) {
            ;
            
            link.attr("x1", function(d) { source_node = data.nodes[d.source]; 
-                                         return projection([source_node.lon, source_node.lat])[0];})
+                                         return projection([-1 * source_node.lon, -1 * source_node.lat])[0];})
            .attr("y1", function(d) { source_node = data.nodes[d.source]; 
-                                         return projection([source_node.lon, source_node.lat])[1];})
+                                         return projection([-1 * source_node.lon, -1 * source_node.lat])[1];})
            .attr("x2", function(d) { target_node = data.nodes[d.target]; 
-                                         return projection([target_node.lon, target_node.lat])[0];})
+                                         return projection([-1 * target_node.lon, -1 * target_node.lat])[0];})
            .attr("y2", function(d) { target_node = data.nodes[d.target]; 
-                                         return projection([target_node.lon, target_node.lat])[1];});
-
+                                         return projection([-1 * target_node.lon, -1 * target_node.lat])[1];});
+ 
            console.log(data)
            function fade(opacity) {
                    return function(d) {

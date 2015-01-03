@@ -1,5 +1,9 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import re
 import requests
+import time
+import cPickle as pickle
 from bs4 import BeautifulSoup
 
 def get_alternative_rock_band_list():
@@ -58,16 +62,10 @@ def get_soup_origin_date(soup):
 
 def get_city_lon_lat(city_link):
    soup = get_soup(city_link)
-   element = find_table_string(soup, u'Country')
+   coord_string = str(soup.findAll('span', {"class" : "plainlinks nourlexpansion"}))
    in_US = True
-   print element
-   if element != None:
-      try:
-         if element.find('a').text != u'United States':
-            in_US = False
-      except:
-         pass 
-   
+   if 'region:US' not in coord_string:
+      in_US = False
    if in_US:
       latitude = soup.findAll('span', {"class" : "latitude"})[0].text
       longitude = soup.findAll('span', {"class" : "longitude"})[0].text
@@ -76,19 +74,50 @@ def get_city_lon_lat(city_link):
 
 #http://stackoverflow.com/questions/10852955/python-batch-convert-gps-positions-to-lat-lon-decimals
 def conversion(old):
+    #print old
     direction = {'N':-1, 'S':1, 'E': -1, 'W':1}
     new = old.replace(u'°',' ').replace(u'\u2032',' ').replace(u'\u2033',' ')
     new = new.split()
+    #print new
     new_dir = new.pop()
     new.extend([0,0,0])
-    return (int(new[0])+int(new[1])/60.0+int(new[2])/3600.0) * direction[new_dir]
+    return (int(float(new[0]))+int(float(new[1]))/60.0+int(float(new[2]))/3600.0) * direction[new_dir]
 
-def get_all_artist_data():
-   artists = get_alternative_rock_band_list()
+def get_all_artist_data(cities, artists_seen, artists):
    for artist in artists:
+      if artist in artists_seen:
+         continue
+      artists_seen.add(artist)
+      time.sleep(1)
       soup = get_soup(artists[artist])
       print artist
       origin_date = get_soup_origin_date(soup)
       origin_city = get_soup_city_link(soup)
-      lat_lon = get_city_lon_lat(origin_city)
-      print origin_date, origin_city
+      origin_city_key = origin_city.keys()[0]
+      if origin_city_key != None and origin_city[origin_city_key] != None:
+         origin_city_no_commas = origin_city_key.split(',')[0]
+         print origin_city_no_commas
+         if origin_city_no_commas not in cities:
+            lat_lon = get_city_lon_lat(origin_city[origin_city_key])
+            cities[origin_city_no_commas] = {"artists":[artist], "loc":lat_lon}
+         else:
+            cities[origin_city_no_commas]["artists"].append(artist)
+   return cities
+
+def pickle_dump():
+   cities = {}
+   artists_seen = set([])
+   artists = get_alternative_rock_band_list()
+   artists_set = set(artists.keys())
+   while(len(artists_set.difference(artists_seen)) > 0):
+      try:
+         get_all_artist_data(cities, artists_seen, artists)
+      except:
+         print 'exception', sys.exc_info()[0]
+         time.sleep(600) # wikipedia refusing to answer, so wait a bit
+   for city in cities:
+      if cities[city]["loc"] == None:
+         del cities[city]
+   pickle.dump(cities, open("cities.p", 'wb'))
+
+
