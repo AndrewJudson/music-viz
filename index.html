@@ -110,7 +110,7 @@ var path = d3.geo.path()
 var g = svg.append("g");
  
 // load and display the World - modified from D3 Tips and Tricks
-d3.json("us_states.json", function(error, us) {
+d3.json("data/us_states.json", function(error, us) {
     g.append("g")
         .attr("id", "states")
         .selectAll("path")
@@ -126,7 +126,7 @@ d3.json("us_states.json", function(error, us) {
         .attr("id", "state-borders")
         .attr("d", path);
 
-    var data = d3.json("city_data.json", function(error, data) {
+    var data = d3.json("data/city_data.json", function(error, data) {
         var num_lines = data.links.length;
         var line_color = d3.scale.sqrt().domain([0, num_lines]).range(["#99CCFF", "#000066"]); //scale color by sqrt to seperate it out
         var node = g.selectAll(".node")

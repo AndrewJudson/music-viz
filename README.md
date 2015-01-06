@@ -1,5 +1,5 @@
 #Lyrical Similarity By City: An Experiment in NLP and Data Visualization
-This project is a web visualization of NLP data gathered from data scraped from the internet. The list of musicians, and their respective origin (as well as city latitude and longitude) were scraped from Wikipedia. The lyrics data was scraped from Rap Genius using the Genius API.
+This project is a web visualization of NLP data gathered from data scraped from the internet. [See it here.](http://andrewjudson.github.io/music-viz/) The list of musicians, and their respective origin (as well as city latitude and longitude) were scraped from Wikipedia. The lyrics data was scraped from Rap Genius using the Genius API.
 
 **Dataset:** List of alternative rock musicians/their origin cities from Wikipedia, their most popular song lyrics from Genius.
 
