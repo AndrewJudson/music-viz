@@ -55,6 +55,7 @@ p {
   stroke: #fff;
   stroke-width: 1.5px;
   cursor: pointer;
+  pointer-events: all;
 }
 
 .link {
@@ -66,6 +67,7 @@ circle {
   stroke-width: 1.5px;
   stroke: "green";
   cursor: pointer;
+  pointer-events: all;
 }
 
 line {
@@ -109,7 +111,7 @@ var path = d3.geo.path()
  
 var g = svg.append("g");
  
-// load and display the World - modified from D3 Tips and Tricks
+// load and display the World - modified from D3 Tips and Tricks. topojson file also gotten from there.
 d3.json("data/us_states.json", function(error, us) {
     g.append("g")
         .attr("id", "states")
@@ -145,15 +147,18 @@ d3.json("data/us_states.json", function(error, us) {
             })
             .style("stroke", "#000000")
             .style("stroke-width", "0.05px")
+            .style("pointer-events", "all")
             .on('mouseover', tip.show)
             .on("click", fade(0))
             .on('mouseout', tip.hide);
-
+        
+        //http://stackoverflow.com/questions/27804203/svg-circle-not-registering-mouseover-very-well/27814889#27814889 in order to get it register better
         var link = g.selectAll(".link")
             .data(data.links)
             .enter()
             .append("line")
             .attr("class", "link")
+            .style("pointer-events", "none")
             .style("stroke-opacity", 0)
             .style("stroke", function(d) {
                 return line_color([Math.floor(d.nlp_1 * num_lines)]);
