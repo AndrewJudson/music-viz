@@ -74,6 +74,12 @@ line {
   stroke: #999;
 }
 
+.legend {
+  font-size: 12px;
+  font-family: "Inconsolata";
+  stroke: white;
+}
+
 </style>
 <body bgcolor="#000000">
 <link href="//fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css">
@@ -111,7 +117,7 @@ var path = d3.geo.path()
  
 var g = svg.append("g");
  
-// load and display the World - modified from D3 Tips and Tricks. topojson file also gotten from there.
+// load and display the World - modified from D3 Tips and Tricks. topojson file from https://github.com/alignedleft/d3-book/blob/master/chapter_12/us-states.json
 d3.json("data/us_states.json", function(error, us) {
     g.append("g")
         .attr("id", "states")
@@ -130,7 +136,7 @@ d3.json("data/us_states.json", function(error, us) {
 
     var data = d3.json("data/city_data.json", function(error, data) {
         var num_lines = data.links.length;
-        var line_color = d3.scale.sqrt().domain([0, num_lines]).range(["#99CCFF", "#000066"]); //scale color by sqrt to seperate it out
+        var line_color = d3.scale.sqrt().domain([0, num_lines]).range(["#CCFFFF", "#000066"]); //scale color by sqrt to seperate it out
         var node = g.selectAll(".node")
             .data(data.nodes)
             .enter()
@@ -190,6 +196,32 @@ d3.json("data/us_states.json", function(error, us) {
                 });
             };
         };
+        //legend inspired by http://bl.ocks.org/KoGor/5685876
+        var color_domain = [0, 0.05, 0.10, 0.5, 1]
+        var legend_labels = ["0", "0.05", "0.10", "0.5", "1"] 
+        var ext_color_domain = [0, 0.05, 0.10, 0.5, 1]
+      
+        var legend = svg.selectAll("g.legend")
+            .data(ext_color_domain)
+            .enter().append("g")
+            .attr("class", "legend");
+      
+        var ls_w = 20, ls_h = 20;
+      
+        legend.append("rect")
+        .attr("x", 20)
+        .attr("y", function(d, i){ return height - (i*ls_h) - 2*ls_h;})
+        .attr("width", ls_w)
+        .attr("height", ls_h)
+        .style("fill", function(d, i) { return line_color([Math.floor(d * num_lines)]); })
+        .style("opacity", 0.8);
+      
+        legend.append("text")
+        .attr("x", 50)
+        .attr("y", function(d, i){ return height - (i*ls_h) - ls_h - 4;})
+        .style("color", "white")
+        .text(function(d, i){ return legend_labels[i]; });
+
     });
 });
 
